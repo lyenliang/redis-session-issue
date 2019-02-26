@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project basedir="." default="buildWarFile" name="ss">
+	<property environment="env"/>
+	<property name="junit.output.dir" value="dist/test"/>
+	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="target" value="1.8"/>
+	<property name="source" value="1.8"/>
+	<property name="exportDir" value="dist"/>
+    
+	<path id="compile.classpath">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="WebContent/WEB-INF/classes"/>
+		<mkdir dir="WebContent/WEB-INF/classes"/>
+		<mkdir dir="${exportDir}"/>
+	</target>
+
+	<target name="copy-resources">
+		<copy todir="WebContent/WEB-INF/classes" includeemptydirs="false">
+			<fileset dir="src">
+				<exclude name="**/*.java"/>
+				<exclude name="**/log4j.properties*"/>
+			</fileset>
+		</copy>
+		<copy file="src/log4j_config.properties" tofile="WebContent/WEB-INF/classes/log4j.properties" overwrite="yes"/>
+	</target>
+
+	<target name="compile" depends="clean,copy-resources">
+		<echo message="${ant.project.name}: ${ant.file}"/>
+		<javac debug="true" encoding="UTF-8" debuglevel="${debuglevel}" destdir="WebContent/WEB-INF/classes" source="${source}" target="${target}" includeAntRuntime="true">
+			<src path="src"/>
+			<classpath refid="compile.classpath"/>
+		</javac>
+	</target>
+
+	<target name="buildWarFile" depends="compile" >
+		<war destfile="${exportDir}/ss.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent">
+				<include name="include/*.jsp"/>
+				<include name="WEB-INF/**"/>
+				<include name="*.*"/>
+			</fileset>
+		</war>
+	</target>
+
+</project>
